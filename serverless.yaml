@@ -1,0 +1,6 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: nikhildev489
+# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
+app: aws-nextjs
+slsNextApp:
+  component: "@sls-next/serverless-component@3.7.0"  
