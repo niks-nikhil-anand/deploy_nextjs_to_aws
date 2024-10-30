@@ -1,25 +1,40 @@
 name: CI
+
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: '12.x'
+          node-version: '18.x'  # It's recommended to use a newer version for Next.js
+
       - name: Install NPM dependencies
-        run: npm install
+        run: npm ci  # 'npm ci' is faster and reliable for CI environments
+
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET }}
           aws-region: ap-south-1
-      - name: Deploy Next.js app
-        run: npx serverless
+
+      - name: Deploy Next.js app with Serverless
+        run: npx serverless deploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET }}
+
+      - name: Clear Serverless cache (optional)
+        run: npx serverless prune -n 5  # Keeps the latest 5 versions only if needed for caching
+`
